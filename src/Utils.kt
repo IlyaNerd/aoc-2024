@@ -1,12 +1,16 @@
 import java.math.BigInteger
 import java.security.MessageDigest
 import kotlin.io.path.Path
+import kotlin.io.path.exists
 import kotlin.io.path.readText
 
 /**
  * Reads lines from the given input txt file.
  */
-fun readInput(name: String) = Path("src/$name.txt").readText().trim().lines()
+fun readInput(name: String) =
+    Path("src/$name.txt")
+        .also { check(it.exists()) { "File $name.txt doesnt exist" } }
+        .readText().trim().lines()
 
 /**
  * Converts string to md5 hash.

@@ -7,15 +7,18 @@ fun main() {
         return input.size
     }
 
-    // Test if implementation meets criteria from the description, like:
-    check(part1(listOf("test_input")) == 1)
+    val testInput = readInput("Day00_test")
+    val part1Test = part1(testInput)
+    println("Part 1 test: $part1Test")
+    check(part1Test == 1) { "part 1 test failed" }
 
-    // Or read a large test input from the `src/Day01_test.txt` file:
-    val testInput = readInput("Day01_test")
-    check(part1(testInput) == 1)
+    val part2Test = part1(testInput)
+    println("Part 2 test: $part2Test")
+    check(part2Test == 1) { "part 2 test failed" }
 
-    // Read the input from the `src/Day01.txt` file.
-    val input = readInput("Day01")
+    val input = readInput("Day00")
+    print("Part 1: ")
     part1(input).println()
+    print("Part 2: ")
     part2(input).println()
 }
