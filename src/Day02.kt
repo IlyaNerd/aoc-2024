@@ -22,13 +22,27 @@ fun main() {
         return true
     }
 
+    fun List<Int>.isSafeWithTolerance(): Boolean {
+        if (isSafe()) {
+            return true
+        } else {
+            indices.forEach { i ->
+                val mutable = this.toMutableList()
+                mutable.removeAt(i)
+                if (mutable.isSafe()) return true
+            }
+            return false
+        }
+    }
+
     fun part1(input: List<String>): Int {
         val reports = parse(input)
         return reports.count { report -> report.isSafe() }
     }
 
     fun part2(input: List<String>): Int {
-        return input.size
+        val reports = parse(input)
+        return reports.count { report -> report.isSafeWithTolerance() }
     }
 
     val testInput = readInput("Day02_test")
@@ -41,9 +55,9 @@ fun main() {
     print("Part 1: ")
     part1(input).println()
 
-    val part2Test = part1(testInput)
+    val part2Test = part2(testInput)
     println("Part 2 test: $part2Test")
-    check(part2Test == 1) { "part 2 test failed" }
+    check(part2Test == 4) { "part 2 test failed" }
 
     print("Part 2: ")
     part2(input).println()
