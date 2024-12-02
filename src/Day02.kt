@@ -31,7 +31,7 @@ fun main() {
     }
 
     fun List<Int>.isSafeWithTolerance(): Boolean {
-        val unsafe = unsafeNums()
+        val unsafe = unsafeNums(takeOne = true)
         if (unsafe.isEmpty()) return true
 
         // try removing unsafe nums and first and last
