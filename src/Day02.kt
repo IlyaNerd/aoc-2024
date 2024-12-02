@@ -5,34 +5,49 @@ fun main() {
         }
     }
 
-    fun List<Int>.isSafe(): Boolean {
+    fun List<Int>.unsafeNums(takeOne: Boolean = false): List<Int> {
         val isAsc = (this[1] - this[0]) > 0
+        val unsafe = mutableListOf<Int>()
         this.forEachIndexed { index, number ->
-            if (index != 0) {
-                val prev = this[index - 1]
-                val diff = number - prev
+            if (index != lastIndex) {
+                val next = this[index + 1]
+                val diff = next - number
                 when {
-                    diff == 0 -> return false
-                    diff > 3 || diff < -3 -> return false
-                    diff > 0 && !isAsc -> return false
-                    diff < 0 && isAsc -> return false
+                    diff == 0 -> unsafe.add(index)
+                    diff > 3 || diff < -3 -> unsafe.add(index)
+                    diff > 0 && !isAsc -> unsafe.add(index)
+                    diff < 0 && isAsc -> unsafe.add(index)
                 }
             }
+            if (takeOne && unsafe.isNotEmpty()) {
+                return unsafe
+            }
         }
-        return true
+        return unsafe
+    }
+
+    fun List<Int>.isSafe(): Boolean {
+        return unsafeNums(takeOne = true).isEmpty()
     }
 
     fun List<Int>.isSafeWithTolerance(): Boolean {
-        if (isSafe()) {
-            return true
-        } else {
-            indices.forEach { i ->
-                val mutable = this.toMutableList()
-                mutable.removeAt(i)
-                if (mutable.isSafe()) return true
-            }
-            return false
+        val unsafe = unsafeNums()
+        if (unsafe.isEmpty()) return true
+
+        // try removing unsafe nums and first and last
+        (unsafe + 0 + this.lastIndex).forEach { i ->
+            val mutable = this.toMutableList()
+            mutable.removeAt(i)
+            if (mutable.isSafe()) return true
         }
+
+        // try removing unsafe + 1 nums as we compare 'current' and 'next'; 'next' can be faulty
+        unsafe.forEach { i ->
+            val mutable = this.toMutableList()
+            mutable.removeAt(i + 1)
+            if (mutable.isSafe()) return true
+        }
+        return false
     }
 
     fun part1(input: List<String>): Int {
