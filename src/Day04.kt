@@ -61,7 +61,76 @@ fun main() {
     }
 
     fun part2(input: List<List<Char>>): Int {
-        return input.size
+        data class Point(val x: Int, val y: Int)
+
+        fun List<List<Char>>.getOrNull(point: Point) = getOrNull(point.x)?.getOrNull(point.y)
+
+        val possibleStrings = setOf(
+            "MMASS", "SSAMM", "MSAMS", "SMASM"
+        )
+
+        val resultPoints = mutableSetOf<Set<Point>>() // set of set of 5 points
+
+        fun checkMasDownRight(i: Int, j: Int) {
+            val points = listOf(
+                Point(i, j),
+                Point(i, j + 2),
+                Point(i + 1, j + 1),
+                Point(i + 2, j),
+                Point(i + 2, j + 2),
+            )
+            val str = points.map { input.getOrNull(it) ?: return }.joinToString("")
+            if (possibleStrings.contains(str)) resultPoints.add(points.toSet())
+        }
+
+        fun checkMasDownLeft(i: Int, j: Int) {
+            val points = listOf(
+                Point(i, j - 2),
+                Point(i, j),
+                Point(i + 1, j - 1),
+                Point(i + 2, j - 2),
+                Point(i + 2, j),
+            )
+            val str = points.map { input.getOrNull(it) ?: return }.joinToString("")
+            if (possibleStrings.contains(str)) resultPoints.add(points.toSet())
+        }
+
+        fun checkMasTopRight(i: Int, j: Int) {
+            val points = listOf(
+                Point(i - 2, j),
+                Point(i - 2, j + 2),
+                Point(i - 1, j + 1),
+                Point(i, j),
+                Point(i, j + 2),
+            )
+            val str = points.map { input.getOrNull(it) ?: return }.joinToString("")
+            if (possibleStrings.contains(str)) resultPoints.add(points.toSet())
+        }
+
+        fun checkMasTopLeft(i: Int, j: Int) {
+            val points = listOf(
+                Point(i - 2, j - 2),
+                Point(i - 2, j),
+                Point(i - 1, j - 1),
+                Point(i, j - 2),
+                Point(i, j),
+            )
+            val str = points.map { input.getOrNull(it) ?: return }.joinToString("")
+            if (possibleStrings.contains(str)) resultPoints.add(points.toSet())
+        }
+
+        input.forEachIndexed { i, line ->
+            line.forEachIndexed { j, char ->
+                if (char == 'M') {
+                    checkMasDownRight(i, j)
+                    checkMasDownLeft(i, j)
+                    checkMasTopRight(i, j)
+                    checkMasTopLeft(i, j)
+                }
+            }
+        }
+
+        return resultPoints.size
     }
 
     val testInput = readInput("Day04_test").map { string -> string.toCharArray().toList() }
@@ -76,7 +145,7 @@ fun main() {
 
     val part2Test = part2(testInput)
     println("Part 2 test: $part2Test")
-    check(part2Test == 1) { "part 2 test failed" }
+    check(part2Test == 9) { "part 2 test failed" }
 
     print("Part 2: ")
     part2(input).println()
