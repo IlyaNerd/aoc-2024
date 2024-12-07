@@ -22,6 +22,7 @@ fun main() {
                     val r = when (operator) {
                         Operator.plus -> t + cur
                         Operator.mult -> t * cur
+                        Operator.concat -> t.concat(cur)
                     }
                     t = r
                     if (t > total) return false
@@ -34,37 +35,34 @@ fun main() {
         }
     }
 
-    fun part2(input: List<String>): Int {
-        return input.size
-    }
-
     val testInput = readInput("Day07_test")
     val part1Test = part1(testInput)
     println("Part 1 test: $part1Test")
-    check(part1Test == 3749L) { "part 1 test failed" }
+    check(part1Test == 11387L) { "part 1 test failed" }
 
     val input = readInput("Day07")
 
     print("Part 1: ")
     part1(input).println()
-
-    val part2Test = part2(testInput)
-    println("Part 2 test: $part2Test")
-    check(part2Test == 1) { "part 2 test failed" }
-
-    print("Part 2: ")
-    part2(input).println()
 }
 
 private object Day07 {
-    enum class Operator { plus, mult }
+    enum class Operator { plus, mult, concat }
+}
+
+fun Long.concat(y: Long): Long {
+    var xScale = 1L
+    while (xScale <= y) {
+        xScale *= 10
+    }
+    return this * xScale + y
 }
 
 // thank you StackOverflow :) https://stackoverflow.com/a/62270662/6498008
 fun <T> cartesianProduct(iterables: List<List<T>>): Sequence<List<T>> = sequence {
     val numberOfIterables = iterables.size
-    val lstLengths = ArrayList<Int>()
-    val lstRemaining = ArrayList(listOf(1))
+    val lstLengths = mutableListOf<Int>()
+    val lstRemaining = mutableListOf<Int>(1)
 
     iterables.reversed().forEach {
         lstLengths.add(0, it.size)
@@ -74,7 +72,7 @@ fun <T> cartesianProduct(iterables: List<List<T>>): Sequence<List<T>> = sequence
     val nProducts = lstRemaining.removeAt(0)
 
     (0 until nProducts).forEach { product ->
-        val result = ArrayList<T>()
+        val result = mutableListOf<T>()
         (0 until numberOfIterables).forEach { iterableIndex ->
             val elementIndex = product / lstRemaining[iterableIndex] % lstLengths[iterableIndex]
             result.add(iterables[iterableIndex][elementIndex])
