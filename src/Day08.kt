@@ -39,15 +39,11 @@ fun main() {
             locations.forEach { (x, y) ->
                 val diff = x - y
                 if (diff.x > 0) {
-                    val antinode1 = x - diff
-                    val antinode2 = y + diff
-                    if (antinode1.isValid(char)) antinodes.add(antinode1)
-                    if (antinode2.isValid(char)) antinodes.add(antinode2)
+                    (x - diff).let { if (it.isValid(char)) antinodes.add(it) }
+                    (y + diff).let { if (it.isValid(char)) antinodes.add(it) }
                 } else if (diff.x < 0) {
-                    val antinode1 = x + diff
-                    val antinode2 = y - diff
-                    if (antinode1.isValid(char)) antinodes.add(antinode1)
-                    if (antinode2.isValid(char)) antinodes.add(antinode2)
+                    (x + diff).let { if (it.isValid(char)) antinodes.add(it) }
+                    (y - diff).let { if (it.isValid(char)) antinodes.add(it) }
                 } else error("same x? $x $y")
             }
         }
@@ -56,7 +52,38 @@ fun main() {
     }
 
     fun part2(input: List<String>): Int {
-        return input.size
+        val lastX = input.lastIndex
+        val lastY = input.first().lastIndex
+
+        fun Point.isOutOfBounds() = x < 0 || y < 0 || y > lastY || x > lastX
+
+        val antennas = antennas(input)
+        val antinodes = mutableSetOf<Point>()
+
+        fun captureAntinodes(start: Point, next: (Point) -> Point) {
+            antinodes.add(start)
+            var node = next(start)
+            while (true) {
+                if (node.isOutOfBounds()) break
+                antinodes.add(node)
+                node = next(node)
+            }
+        }
+
+        antennas.forEach { (_, locations) ->
+            locations.forEach { (x, y) ->
+                val diff = x - y
+                if (diff.x > 0) {
+                    captureAntinodes(x) { it - diff }
+                    captureAntinodes(y) { it + diff }
+                } else if (diff.x < 0) {
+                    captureAntinodes(x) { it + diff }
+                    captureAntinodes(y) { it - diff }
+                } else error("same x? $x $y")
+            }
+        }
+
+        return antinodes.size
     }
 
     val testInput = readInput("Day08_test")
@@ -71,7 +98,7 @@ fun main() {
 
     val part2Test = part2(testInput)
     println("Part 2 test: $part2Test")
-    check(part2Test == 1) { "part 2 test failed" }
+    check(part2Test == 34) { "part 2 test failed" }
 
     print("Part 2: ")
     part2(input).println()
