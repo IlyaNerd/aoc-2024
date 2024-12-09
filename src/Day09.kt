@@ -1,9 +1,7 @@
-
 fun main() {
 
     fun parse(input: String): MutableList<Pair<Int, MutableList<Int>?>> {
         var n = 0
-        // todo mb result num instead of list
         val list = mutableListOf<Pair<Int, MutableList<Int>?>>()
         input.mapIndexed { i, char ->
             val num = char.digitToInt()
@@ -58,8 +56,44 @@ fun main() {
         }.sum()
     }
 
-    fun part2(input: String): Int {
-        return 1
+    fun part2(input: String): Long {
+        val list = parse(input)
+
+        list.indices.reversed().forEach { j ->
+            val (endSize, endData) = list[j]
+            if (endData == null || endData.isEmpty()) {
+                Unit
+            } else {
+                for (i in (1..j)) {
+                    val (size, data) = list[i]
+                    if (data == null) {
+                        if (size >= endSize) {
+                            list[i] = size to endData
+                            list[j] = endSize to null
+                            break
+                        }
+                    } else if (data.size != size) {
+                        if (size - data.size >= endData.size) {
+                            data.addAll(endData)
+                            list[j] = endSize to null
+                            break
+                        }
+                    }
+                }
+            }
+        }
+        return list.asSequence()
+            .map { (targetSize, list) ->
+                val list = list ?: mutableListOf()
+                val diff = targetSize - list.size
+                (0 until diff).forEach {
+                    list.add(0)
+                }
+                list
+            }
+            .flatten()
+            .mapIndexed { i, n -> i * n.toLong() }
+            .sum()
     }
 
     val testInput = readInput("Day09_test").first()
@@ -74,7 +108,7 @@ fun main() {
 
     val part2Test = part2(testInput)
     println("Part 2 test: $part2Test")
-    check(part2Test == 1) { "part 2 test failed" }
+    check(part2Test == 2858L) { "part 2 test failed" }
 
     print("Part 2: ")
     part2(input).println()
