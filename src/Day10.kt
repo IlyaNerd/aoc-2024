@@ -54,7 +54,9 @@ fun main() {
     }
 
     fun part2(input: List<String>): Int {
-        return input.size
+        return getPaths(input).sumOf { (_, paths) ->
+            paths.groupBy { it.last() }.values.sumOf { it.size }
+        }
     }
 
     val testInput = readInput("Day10_test")
@@ -69,7 +71,7 @@ fun main() {
 
     val part2Test = part2(testInput)
     println("Part 2 test: $part2Test")
-    check(part2Test == 1) { "part 2 test failed" }
+    check(part2Test == 81) { "part 2 test failed" }
 
     print("Part 2: ")
     part2(input).println()
