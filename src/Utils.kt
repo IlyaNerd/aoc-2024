@@ -25,3 +25,12 @@ fun String.md5() = BigInteger(1, MessageDigest.getInstance("MD5").digest(toByteA
 fun <T> T.println(): T = also { println(this) }
 
 fun List<String>.twoD(): List<List<Char>> = map { string -> string.toCharArray().toList() }
+
+data class Point(val x: Int, val y: Int)
+
+operator fun List<List<Char>>.get(point: Point) = this[point.x][point.y]
+
+fun Point.left() = copy(y = y - 1)
+fun Point.right() = copy(y = y + 1)
+fun Point.top() = copy(x = x - 1)
+fun Point.bottom() = copy(x = x + 1)
