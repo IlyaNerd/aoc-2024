@@ -60,7 +60,80 @@ fun main() {
     }
 
     fun part2(input: List<String>): Int {
-        return input.size
+        val map = input.twoD()
+        val areas = findAreas(map)
+
+        fun List<Point>.sides(): Int {
+            var count = 0
+            this.groupBy({ it.x }) { it.y }.mapValues { it.value.sorted() }.forEach { (x, ys) ->
+                var prevTop: Point? = null
+                var prevBottom: Point? = null
+
+                ys.forEach { y ->
+                    ptop(x, y).let { element ->
+                        if (!this.contains(element)) {
+                            if (prevTop == null || prevTop!!.y != element.y - 1) {
+                                count++
+                                prevTop = element
+                            } else {
+                                prevTop = element
+                            }
+                        } else {
+                            prevTop = null
+                        }
+                    }
+                    pbottom(x, y).let { element ->
+                        if (!this.contains(element)) {
+                            if (prevBottom == null || prevBottom!!.y != element.y - 1) {
+                                count++
+                                prevBottom = element
+                            } else {
+                                prevBottom = element
+                            }
+                        } else {
+                            prevBottom = null
+                        }
+                    }
+                }
+            }
+
+            this.groupBy({ it.y }) { it.x }.mapValues { it.value.sorted() }.forEach { (y, xs) ->
+                var prevLeft: Point? = null
+                var prevRight: Point? = null
+                xs.forEach { x ->
+                    pleft(x, y).let { element ->
+                        if (!this.contains(element)) {
+                            if (prevLeft == null || prevLeft!!.x != element.x - 1) {
+                                count++
+                                prevLeft = element
+                            } else {
+                                prevLeft = element
+                            }
+                        } else {
+                            prevLeft = null
+                        }
+                    }
+                    pright(x, y).let { element ->
+                        if (!this.contains(element)) {
+                            if (prevRight == null || prevRight!!.x != element.x - 1) {
+                                count++
+                                prevRight = element
+                            } else {
+                                prevRight = element
+                            }
+                        } else {
+                            prevRight = null
+                        }
+                    }
+                }
+            }
+
+            return count
+        }
+
+        return areas.sumOf {
+            it.size * it.sides()
+        }
     }
 
     val testInput = readInput("Day12_test")
@@ -75,7 +148,7 @@ fun main() {
 
     val part2Test = part2(testInput)
     println("Part 2 test: $part2Test")
-    check(part2Test == 1) { "part 2 test failed" }
+    check(part2Test == 1206) { "part 2 test failed" }
 
     print("Part 2: ")
     part2(input).println()
