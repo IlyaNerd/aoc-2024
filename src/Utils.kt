@@ -34,3 +34,8 @@ fun Point.left() = copy(y = y - 1)
 fun Point.right() = copy(y = y + 1)
 fun Point.top() = copy(x = x - 1)
 fun Point.bottom() = copy(x = x + 1)
+
+fun pleft(x: Int, y: Int) = Point(x = x, y = y - 1)
+fun pright(x: Int, y: Int) = Point(x = x, y = y + 1)
+fun ptop(x: Int, y: Int) = Point(x = x - 1, y = y)
+fun pbottom(x: Int, y: Int) = Point(x = x + 1, y = y)
